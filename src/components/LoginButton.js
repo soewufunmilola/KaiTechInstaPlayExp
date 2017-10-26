@@ -16,7 +16,7 @@ constructor(props){
                   >
                       <View  style= {this.props.buttonViewStyle}>
 
-                      <Text style = {this.props.buttonTextStyle}>{this.props.children}</Text>
+                        <Text style = {this.props.buttonTextStyle}>{this.props.children}</Text>
 
                       </View>
 
@@ -32,8 +32,9 @@ constructor(props){
 const viewStyles = {
     supplementaryHighlightStyle: {
           flexDirection: 'column',
-          flex: 1,
           justifyContent: 'center',
-          alignItems: 'center'}}
+          alignItems: 'center'
+    }
+}
 
 export {LoginButton};

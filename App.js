@@ -1,7 +1,7 @@
 import React from 'react';
-import {Text, View, ScrollView, TouchableHighlight,Image, StatusBar } from 'react-native';
+import {Text, View, ScrollView, TouchableHighlight,Image, StatusBar, Linking } from 'react-native';
 import Dimensions from 'Dimensions';
-import { LoginButton } from './src/components';
+import { LoginButton, TappableText } from './src/components';
 
 
 //this code creates a constant that holds the Dimensions of the current device as an object
@@ -21,6 +21,11 @@ const loginButtonInfo = {
 height: 45,
 pageFontSize: 11,
 borderWidth: 0.8
+}
+
+const urls = {
+  forgotInstagramLogin: 'https://www.instagram.com/accounts/password/reset'
+
 }
 
 export default class App extends React.Component
@@ -62,6 +67,20 @@ export default class App extends React.Component
               Facebook Login
               </LoginButton>
 
+
+              <View style = {viewStyles.forgottenLoginEncapsulationView}>
+              <Text style = {textStyles.forgottenLogin}> Forgotten your login details?</Text>
+              <TappableText
+
+              textStyle = {[textStyles.forgottenLogin, textStyles.forgottenLoginBold]}
+              textTapped={() => Linking.openURL(urls.forgotInstagramLogin)}
+              >
+
+              Get Help Signing In Beesh
+              </TappableText>
+
+              </View>
+
             </ScrollView>
        </Image>
     );
@@ -102,6 +121,7 @@ const viewStyles = {
         height: loginButtonInfo.height,
         justifyContent: 'center',
         alignItems: 'center',
+        marginBottom: 20
     },
 
     facebookLoginButtonView:
@@ -130,8 +150,28 @@ const viewStyles = {
         borderColor: colors.facebookButtonBorderColor
 
 
+    },
+
+    forgottenLoginEncapsulationView:{
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: 'transparent',
+      marginTop: 10,
+      marginBottom: window.height * 0.15
     }
 
+};
 
+const textStyles =
+{
+  forgottenLogin: {
+    color:'white',
+    fontSize: loginButtonInfo.pageFontSize,
+  },
+
+  forgottenLoginBold:{
+      fontWeight: 'bold'
+  }
 
 };
