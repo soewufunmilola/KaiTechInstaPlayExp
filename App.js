@@ -2,6 +2,8 @@ import React from 'react';
 import {Text, View } from 'react-native';
 
 export default class App extends React.Component
+
+
  {
     constructor(props)
     {
@@ -12,11 +14,19 @@ export default class App extends React.Component
 
     return (
       <View style={viewStyles.container}>
-          <Text>Testing . . . Testing . . . Mic Check 1 2 1 2</Text>
+          <Text>Testing . . . Testing . . . Mic Check 1 2 1 2
+          welcome to the wedding party of the year
+
+          </Text>
       </View>
     );
   }
 }
+
+
+
+
+
 
 const viewStyles =
   {
