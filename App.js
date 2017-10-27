@@ -17,7 +17,6 @@ const colors = {
 }
 
 const loginButtonInfo = {
-
 height: 45,
 pageFontSize: 11,
 borderWidth: 0.8
@@ -34,6 +33,21 @@ export default class App extends React.Component
   loginButtonTapped = () => {
     console.log('the button was just tapped');
   }
+
+
+    orSeperatorComponent = () => {
+        return(
+            <View style= {viewStyles.orSeperatorComponent}>
+                <View style = {viewStyles.orSeperatorline}/>
+                <Text style= {textStyles.orSeperatorText}> OR</Text>
+                <View style = {viewStyles.orSeperatorline}/>
+            </View>
+        );
+
+
+    }
+
+
   render() {
 
     return (
@@ -69,7 +83,7 @@ export default class App extends React.Component
 
 
               <View style = {viewStyles.forgottenLoginEncapsulationView}>
-              <Text style = {textStyles.forgottenLogin}> Forgotten your login details?</Text>
+              <Text style = {textStyles.forgottenLogin}> Forgotten your login details? </Text>
               <TappableText
 
               textStyle = {[textStyles.forgottenLogin, textStyles.forgottenLoginBold]}
@@ -80,6 +94,7 @@ export default class App extends React.Component
               </TappableText>
 
               </View>
+              <this.orSeperatorComponent/>
 
             </ScrollView>
        </Image>
@@ -158,20 +173,53 @@ const viewStyles = {
       alignItems: 'center',
       backgroundColor: 'transparent',
       marginTop: 10,
-      marginBottom: window.height * 0.15
+      marginBottom: 10
+    },
+
+    orSeperatorComponent: {
+        flexDirection: 'row',
+        width: standardComponentWidth,
+        paddingHorizontal: 10,
+        paddingVertical: 2,
+        marginVertical: 10,
+        alignItems: 'center',
+        alignSelf: 'center'
+
+    },
+
+    orSeperatorline: {
+
+        height: 1,
+        flex: 5,
+        backgroundColor: colors.facebookButtonBorderColor,
+        borderColor: colors.facebookButtonBorderColor,
+        borderWidth: 0.5,
+
+
     }
 
 };
 
 const textStyles =
 {
-  forgottenLogin: {
+  forgottenLogin:
+  {
     color:'white',
     fontSize: loginButtonInfo.pageFontSize,
   },
 
-  forgottenLoginBold:{
+  forgottenLoginBold:
+  {
       fontWeight: 'bold'
+  },
+
+  orSeperatorText:
+  {
+    fontWeight: 'bold',
+    fontSize: 12.5,
+    marginHorizontal: 3,
+    flex: 0.7,
+    color: 'white'
   }
 
 };
