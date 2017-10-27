@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, View, ScrollView, TouchableHighlight,Image, StatusBar, Linking } from 'react-native';
+import {Text, View, ScrollView, TouchableHighlight,Image, StatusBar, Linking, WebView } from 'react-native';
 import Dimensions from 'Dimensions';
 import { LoginButton, TappableText } from './src/components';
 
@@ -25,15 +25,47 @@ const loginButtonInfo = {
 const urls = {
     forgotInstagramLogin: 'https://www.instagram.com/accounts/password/reset',
     twitterLoginUrl: 'https://www.twitter.com/login?lang=en',
-    instagramSignUp: 'https://www.instagram.com/accounts/emailsignup/?hl=en'
+    instagramSignUp: 'https://www.instagram.com/accounts/emailsignup/?hl=en',
+    instagramAuthLogin: 'https://api.instagram.com/oauth/authorize/?client_id=40b40b412b424d44b0bc02d1229a90a7&redirect_uri=http://www.kaitechconsulting.com&response_type=token&scope=basic+follower_list+comments+likes',
+    instagramLogout: 'https://instagram.com/accounts/logout',
+    instagramBase: 'https://www.instagram.com/'
+
 }
 
 export default class App extends React.Component
 {
 
+    constructor(props)
+    {
+          super(props);
+          this.state =
+          {
+              authenticationURL: urls.instagramLogout,
+              retrievedAccessToken: '',
+              isUserLoggedIn: false,
+              displayAuthenticationWebView: false
+
+          }
+
+    }
+
+
     loginButtonTapped = () => {
-        console.log('the button was just tapped');
-  }
+        this.setState({displayAuthenticationWebView: true});
+    }
+
+    onURLStateChange = (webViewState) => {
+      let accessTokenSubString = 'access_token=';
+
+      console.log("yo joe" + webViewState.url)
+
+      if (webViewState.url == urls.instagramBase)
+      {
+          this.setState({authenticationURL: urls.instagramAuthLogin});
+      }
+
+
+    }
 
 
     orSeperatorComponent = () => {
@@ -79,59 +111,83 @@ export default class App extends React.Component
                          Log In With Twitter
                   </TappableText>
                 </View>
-        )
+        );
 
     }
 
-  render() {
+    authenticationWebViewComponent = () =>{
+        return(
+           <WebView
+              source = {{uri: this.state.authenticationURL}}
+              startInLoadingState = {true}
+              onNavigationStateChange = {this.onURLStateChange}
+           />
+        );
+    }
 
-    return (
-        <Image source = {require('./src/images/Superman.jpg')} style = {viewStyles.container}>
-            <StatusBar backgroundColor="transparent" barStyle= "dark-content"/>
-            <ScrollView style={viewStyles.scrollView}>
-              <Image source = {require ('./src/images/instaplaylogo2.png')}
-              resizeMode = {'contain'}
-              style ={viewStyles.instagramTextLogo}
-              />
+    loginScreenComponent = () =>{
+        return (
+          <Image source = {require('./src/images/Superman.jpg')} style = {viewStyles.container}>
+              <StatusBar backgroundColor="transparent" barStyle= "dark-content"/>
+              <ScrollView style={viewStyles.scrollView}>
+                <Image source = {require ('./src/images/instaplaylogo2.png')}
+                resizeMode = {'contain'}
+                style ={viewStyles.instagramTextLogo}
+                />
 
-              <LoginButton
-              buttonViewStyle = {viewStyles.instagramLoginButtonView}
-              touchableHighlightStyle = {viewStyles.instagramLoginButtonHighlightStyle}
-              buttonTextStyle = {{ color: colors.text}}
-              buttonTapped = {this.loginButtonTapped}
-              activeOpacity = {0.75}
-              >
-              Log In (Via Instagram)
-              </LoginButton>
+                <LoginButton
+                buttonViewStyle = {viewStyles.instagramLoginButtonView}
+                touchableHighlightStyle = {viewStyles.instagramLoginButtonHighlightStyle}
+                buttonTextStyle = {{ color: colors.text}}
+                buttonTapped = {this.loginButtonTapped}
+                activeOpacity = {0.75}
+                >
+                Log In (Via Instagram)
+                </LoginButton>
 
-              <LoginButton
-              buttonViewStyle = {[viewStyles.instagramLoginButtonView , viewStyles.facebookLoginButtonView]}
-              touchableHighlightStyle = {viewStyles.facebookloginButtonHighlightStyle}
-              buttonTextStyle = {{ color: colors.text}}
-              buttonTapped = {this.loginButtonTapped}
-              activeOpacity = {0.75}
-              >
-              Facebook Login
-              </LoginButton>
+                <LoginButton
+                buttonViewStyle = {[viewStyles.instagramLoginButtonView , viewStyles.facebookLoginButtonView]}
+                touchableHighlightStyle = {viewStyles.facebookloginButtonHighlightStyle}
+                buttonTextStyle = {{ color: colors.text}}
+                buttonTapped = {this.loginButtonTapped}
+                activeOpacity = {0.75}
+                >
+                Facebook Login
+                </LoginButton>
 
-              <View style = {viewStyles.forgottenLoginEncapsulationView}>
-              <Text style = {textStyles.forgottenLogin}> Forgotten your login details? </Text>
-              <TappableText
+                <View style = {viewStyles.forgottenLoginEncapsulationView}>
+                <Text style = {textStyles.forgottenLogin}> Forgotten your login details? </Text>
+                <TappableText
 
-              textStyle = {[textStyles.forgottenLogin, textStyles.forgottenLoginBold]}
-              textTapped={() => Linking.openURL(urls.forgotInstagramLogin)}
-              >
+                textStyle = {[textStyles.forgottenLogin, textStyles.forgottenLoginBold]}
+                textTapped={() => Linking.openURL(urls.forgotInstagramLogin)}
+                >
 
-              Get Help Signing In Beesh
-              </TappableText>
+                Get Help Signing In Beesh
+                </TappableText>
 
-              </View>
-              {this.orSeperatorComponent()}
-              {this.loginWithTwitterTappableTextComponent()}
-            </ScrollView>
-            {this.signUpFooter()}
-       </Image>
-    );
+                </View>
+                {this.orSeperatorComponent()}
+                {this.loginWithTwitterTappableTextComponent()}
+              </ScrollView>
+              {this.signUpFooter()}
+         </Image>
+        );
+    }
+
+    render() {
+
+          if(this.state.displayAuthenticationWebView == false)
+          {
+              return (
+                  this.loginScreenComponent()
+              );
+          }
+          else {
+            return(
+              this.authenticationWebViewComponent()
+            );
+          }
   }
 
 
@@ -142,14 +198,14 @@ const viewStyles = {
 
    container:
    {
-      flex: 1,
+      flex: 10,
       alignItems: 'center',
       width: null,
       height: null
     },
 
     scrollView: {
-      flex: 0.8
+      flex: 8
     },
 
     instagramTextLogo:
