@@ -40,7 +40,7 @@ export default class App extends React.Component
           super(props);
           this.state =
           {
-              authenticationURL: urls.instagramLogout,
+              authenticationURL: urls.instagramAuthLogin,
               retrievedAccessToken: '',
               isUserLoggedIn: false,
               displayAuthenticationWebView: false
@@ -55,14 +55,24 @@ export default class App extends React.Component
     }
 
     onURLStateChange = (webViewState) => {
-      let accessTokenSubString = 'access_token=';
+        let accessTokenSubString = 'access_token=';
 
-      console.log("yo joe" + webViewState.url)
+        console.log("yo joe" + webViewState.url)
 
-      if (webViewState.url == urls.instagramBase)
-      {
-          this.setState({authenticationURL: urls.instagramAuthLogin});
-      }
+        if (webViewState.url == urls.instagramBase)
+        {
+            this.setState({authenticationURL: urls.instagramAuthLogin});
+        }
+
+        else if (webViewState.url.includes (accessTokenSubString))
+        {
+            let startIndexOfAccessToken = webViewState.url.lastIndexOf(accessTokenSubString) + accessTokenSubString.length;
+            if (this.state.retrievedAccessToken.length < 1)
+            {
+              this.setState({retrievedAccessToken: webViewState.url.substr(startIndexOfAccessToken), displayAuthenticationWebView: false});
+            }
+
+        }
 
 
     }
@@ -175,18 +185,32 @@ export default class App extends React.Component
         );
     }
 
-    render() {
+    render()
+    {
+          let hasSuccessfullyLoggedIn = (this.state.retrievedAccessToken.length > 1);
+          let shouldLogin = (this.state.displayAuthenticationWebView == false && this.state.retrievedAccessToken.length < 1);
 
-          if(this.state.displayAuthenticationWebView == false)
+          console.log("retrievedAccessToken = " + this.state.retrievedAccessToken)
+          if(shouldLogin)
           {
               return (
                   this.loginScreenComponent()
               );
           }
-          else {
-            return(
-              this.authenticationWebViewComponent()
-            );
+          else  if(this.state.displayAuthenticationWebView)
+          {
+              return(
+                  this.authenticationWebViewComponent()
+              );
+          }
+
+          else if (hasSuccessfullyLoggedIn == true)
+          {
+              return(
+                    <View style = {{alignItems: 'center', justifyContent: 'center', flex: 1}}>
+                        <Text>CONGRATULATIONS, YOU ARE NOW BADASS!</Text>
+                    </View>
+              );
           }
   }
 
