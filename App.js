@@ -3,6 +3,7 @@ import {Text, View, ScrollView, TouchableHighlight,Image, StatusBar, Linking, We
 import {Constants , BlurView} from 'expo';
 import Dimensions from 'Dimensions';
 import { LoginButton, TappableText } from './src/components';
+import { NetworkManager } from './src/model';
 
 
 //this code creates a constant that holds the Dimensions of the current device as an object
@@ -46,10 +47,10 @@ export default class App extends React.Component
               isUserLoggedIn: false,
               displayAuthenticationWebView: false,
               feedDataArray: [],
+              sessionData: null,
               hasRetrievedInitialSuccessfulFeedDataResponse: false,
               isDataLoading: false,
-              shouldDisplayLoginScreen: true,
-
+              shouldDisplayLoginScreen: true
           }
           this.isSuccessfullyLoggedInAlertAlreadyPoppedUp = false;
 
@@ -82,7 +83,7 @@ export default class App extends React.Component
                     'Success',
                     'Congratulations Beesh, BADASS Wannabee',
                     [
-                      {text: 'Proceed', onPress:() => this.setState({retrievedAccessToken: webViewState.url.substr(startIndexOfAccessToken), isDataLoading: true, displayAuthenticationWebView: false})},
+                      {text: 'Proceed', onPress:() => this.beginFetchUserSessionData(webViewState.url.substr(startIndexOfAccessToken))},
                     ]
                 )
 
@@ -96,6 +97,15 @@ export default class App extends React.Component
 
     }
 
+    beginFetchUserSessionData = (accessToken) => {
+      this.networkManager = new NetworkManager(accessToken);
+      let self  = this;
+      this.networkManager.getLoggedInUserInformation((responseData) =>
+      {
+          self.setState({sessionData:responseData})
+      }) ;
+      this.setState({retrievedAccessToken: accessToken, isDataLoading: true, displayAuthenticationWebView: false});
+    }
 
     orSeperatorComponent = () => {
         return(
