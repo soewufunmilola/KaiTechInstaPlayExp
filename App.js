@@ -100,10 +100,12 @@ export default class App extends React.Component
     beginFetchUserSessionData = (accessToken) => {
       this.networkManager = new NetworkManager(accessToken);
       let self  = this;
-      this.networkManager.getLoggedInUserInformation((responseData) =>
-      {
-          self.setState({sessionData:responseData})
-      }) ;
+      this.networkManager.getSessionAndFeedData(sessionResponse => {
+        console.log(sessionResponse)
+      },
+      feedResponse => {
+        console.log(feedResponse)
+      });
       this.setState({retrievedAccessToken: accessToken, isDataLoading: true, displayAuthenticationWebView: false});
     }
 

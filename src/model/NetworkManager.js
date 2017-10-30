@@ -8,6 +8,14 @@ const axiosEndpointManager = axios.create (
   }
 );
 
+const responseState = {
+    unsent: 0,
+    opened: 1,
+    headersRecieved: 2,
+    loading: 3,
+    done: 4
+}
+
 class NetworkManager{
 
   constructor(accessToken){
@@ -16,10 +24,13 @@ class NetworkManager{
 
   getLoggedInUserInformation(completionCallBack)
   {
-    axiosEndpointManager.get('self/?access_token=' + this.accessToken)
+    return axiosEndpointManager.get('self/?access_token=' + this.accessToken)
     .then(response =>
       {
-        completionCallBack(response.data);
+        if (response.request.readyState == responseState.done)
+        {
+          completionCallBack(response.data);
+        }
       }
     )
     .catch(response =>
@@ -30,6 +41,34 @@ class NetworkManager{
     );
 
   }
+
+  getFeedData(feedDataCallBack)
+  {
+    return axiosEndpointManager.get('self/media/recent/?access_token=' + this.accessToken)
+    .then(response =>
+      {
+        if (response.request.readyState == responseState.done)
+        {
+          feedDataCallBack(response.data);
+        }
+      }
+    )
+    .catch(response =>
+      {
+        console.log("oops this one is an error");
+        console.log(response);
+      }
+    );
+  }
+
+  getSessionAndFeedData(sessionDataCallBack, feedDataCallBack)
+  {
+      this.getLoggedInUserInformation(sessionDataCallBack)
+      .then(this.getFeedData(feedDataCallBack))
+
+  }
+
+
 }
 
 export { NetworkManager };
