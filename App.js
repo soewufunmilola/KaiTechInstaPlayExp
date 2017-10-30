@@ -1,5 +1,6 @@
 import React from 'react';
-import {Text, View, ScrollView, TouchableHighlight,Image, StatusBar, Linking, WebView } from 'react-native';
+import {Text, View, ScrollView, TouchableHighlight,Image, StatusBar, Linking, WebView, Alert, StyleSheet, ActivityIndicator } from 'react-native';
+import {Constants , BlurView} from 'expo';
 import Dimensions from 'Dimensions';
 import { LoginButton, TappableText } from './src/components';
 
@@ -43,15 +44,20 @@ export default class App extends React.Component
               authenticationURL: urls.instagramAuthLogin,
               retrievedAccessToken: '',
               isUserLoggedIn: false,
-              displayAuthenticationWebView: false
+              displayAuthenticationWebView: false,
+              feedDataArray: [],
+              hasRetrievedInitialSuccessfulFeedDataResponse: false,
+              isDataLoading: false,
+              shouldDisplayLoginScreen: true,
 
           }
+          this.isSuccessfullyLoggedInAlertAlreadyPoppedUp = false;
 
     }
 
 
     loginButtonTapped = () => {
-        this.setState({displayAuthenticationWebView: true});
+        this.setState({displayAuthenticationWebView: true, shouldDisplayLoginScreen:false});
     }
 
     onURLStateChange = (webViewState) => {
@@ -69,7 +75,20 @@ export default class App extends React.Component
             let startIndexOfAccessToken = webViewState.url.lastIndexOf(accessTokenSubString) + accessTokenSubString.length;
             if (this.state.retrievedAccessToken.length < 1)
             {
-              this.setState({retrievedAccessToken: webViewState.url.substr(startIndexOfAccessToken), displayAuthenticationWebView: false});
+            //  this.setState({retrievedAccessToken: webViewState.url.substr(startIndexOfAccessToken), displayAuthenticationWebView: false});
+            if (this.isSuccessfullyLoggedInAlertAlreadyPoppedUp == false)
+            {
+                Alert.alert(
+                    'Success',
+                    'Congratulations Beesh, BADASS Wannabee',
+                    [
+                      {text: 'Proceed', onPress:() => this.setState({retrievedAccessToken: webViewState.url.substr(startIndexOfAccessToken), isDataLoading: true, displayAuthenticationWebView: false})},
+                    ]
+                )
+
+                this.isSuccessfullyLoggedInAlertAlreadyPoppedUp = true;
+            }
+
             }
 
         }
@@ -185,19 +204,48 @@ export default class App extends React.Component
         );
     }
 
+
+    instagramActivityIndicatorBlurView = () =>{
+
+      return(
+          <Image
+            source = {require('./src/images/wallpaper.jpg')}
+            resizeMode= {'cover'}
+            style = {{width: null, height : null, flex: 1}}
+          >
+              <BlurView
+                  tint = "dark"
+                  intensity = {85}
+                  style = {[StyleSheet.absoluteFill, {alignItems: 'center', justifyContent: 'center', flex : 1 }]}
+              >
+                    <ActivityIndicator size = 'large'/>
+                    <Text style = {{color: 'white', fontSize: 40}}> is loading nigge </Text>
+              </BlurView>
+          </Image>
+      );
+    }
+
     render()
     {
-          let hasSuccessfullyLoggedIn = (this.state.retrievedAccessToken.length > 1);
-          let shouldLogin = (this.state.displayAuthenticationWebView == false && this.state.retrievedAccessToken.length < 1);
+          let hasSuccessfullyLoggedIn = (this.state.retrievedAccessToken.length > 1 && this.state.isDataLoading == false);
+        //  let shouldLogin = (this.state.displayAuthenticationWebView == false && this.state.retrievedAccessToken.length < 1);
 
           console.log("retrievedAccessToken = " + this.state.retrievedAccessToken)
-          if(shouldLogin)
+          if(this.state.shouldDisplayLoginScreen)
           {
               return (
                   this.loginScreenComponent()
               );
           }
-          else  if(this.state.displayAuthenticationWebView)
+
+          else if (this.state.isDataLoading)
+          {
+              return(
+                  this.instagramActivityIndicatorBlurView()
+              );
+          }
+
+          else if(this.state.displayAuthenticationWebView && !this.state.shouldDisplayLoginScreen)
           {
               return(
                   this.authenticationWebViewComponent()
