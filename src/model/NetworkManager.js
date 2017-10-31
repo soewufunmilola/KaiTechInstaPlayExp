@@ -35,8 +35,8 @@ class NetworkManager{
     )
     .catch(response =>
       {
-        console.log("oops this one is an error");
-        console.log(response);
+        console.error("oops this one is a session user error");
+        console.error(response);
       }
     );
 
@@ -49,14 +49,17 @@ class NetworkManager{
       {
         if (response.request.readyState == responseState.done)
         {
-          feedDataCallBack(response.data);
+          console.log("Succesfully retrieved data");
+          console.log("URL is: https://api.instagram.com/v1/users/self/media/recent/?access_token="+this.accessToken);
+          feedDataCallBack(response.data.data);
         }
       }
     )
     .catch(response =>
       {
-        console.log("oops this one is an error");
-        console.log(response);
+        console.error("oops this one is a data feed error");
+        console.error(response);
+        throw response;
       }
     );
   }

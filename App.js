@@ -1,9 +1,10 @@
-import React from 'react';
-import {Text, View, ScrollView, TouchableHighlight,Image, StatusBar, Linking, WebView, Alert, StyleSheet, ActivityIndicator } from 'react-native';
+import React, { Component } from 'react';
+import {Text, View, ScrollView, FlatList, TouchableHighlight,Image, StatusBar, Linking, WebView, Alert, StyleSheet, ActivityIndicator } from 'react-native';
 import {Constants , BlurView} from 'expo';
 import Dimensions from 'Dimensions';
-import { LoginButton, TappableText } from './src/components';
+import { LoginButton, TappableText, InstaNavigationBar, InstaFeedCell, CellUserDataBar } from './src/components';
 import { NetworkManager } from './src/model';
+
 
 
 //this code creates a constant that holds the Dimensions of the current device as an object
@@ -100,13 +101,16 @@ export default class App extends React.Component
     beginFetchUserSessionData = (accessToken) => {
       this.networkManager = new NetworkManager(accessToken);
       let self  = this;
+
+
       this.networkManager.getSessionAndFeedData(sessionResponse => {
-        console.log(sessionResponse)
+        self.setState({sessionData : sessionResponse});
+        this.setState({retrievedAccessToken: accessToken, isDataLoading: true, displayAuthenticationWebView: false});
       },
       feedResponse => {
-        console.log(feedResponse)
+        self.setState({feedDataArray : feedResponse, isDataLoading: false});
       });
-      this.setState({retrievedAccessToken: accessToken, isDataLoading: true, displayAuthenticationWebView: false});
+
     }
 
     orSeperatorComponent = () => {
@@ -234,11 +238,18 @@ export default class App extends React.Component
                     <Text style = {{color: 'white', fontSize: 40}}> is loading nigge </Text>
               </BlurView>
           </Image>
+
       );
     }
 
     render()
     {
+
+          console.log('Here comes the feed array (the 2nd User): ');
+          if (this.state.feedDataArray[1]) {
+            console.log(this.state.feedDataArray[1].user);
+          }
+
           let hasSuccessfullyLoggedIn = (this.state.retrievedAccessToken.length > 1 && this.state.isDataLoading == false);
         //  let shouldLogin = (this.state.displayAuthenticationWebView == false && this.state.retrievedAccessToken.length < 1);
 
@@ -267,11 +278,17 @@ export default class App extends React.Component
           else if (hasSuccessfullyLoggedIn == true)
           {
               return(
-                    <View style = {{alignItems: 'center', justifyContent: 'center', flex: 1}}>
-                        <Text>CONGRATULATIONS, YOU ARE NOW BADASS!</Text>
+                    <View style = {{alignItems: 'center', flex: 1}}>
+                        <InstaNavigationBar/>
+                        <FlatList
+                          data={this.state.feedDataArray}
+                          renderItem = {({item}) => <InstaFeedCell cellData={item}/>}
+                          keyExtractor = {item => item.id}
+                        />
                     </View>
               );
           }
+
   }
 
 
