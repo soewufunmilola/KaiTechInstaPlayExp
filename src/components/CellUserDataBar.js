@@ -15,7 +15,11 @@ class CellUserDataBar extends Component
       <View style= {viewStyles.container}>
         <Image source= {{uri: this.props.imageURL}} style={viewStyles.profilePicture} resizeMode = {'cover'}/>
         <Text style = {textStyles.username}>{this.props.username}</Text>
-        <Text style = {textStyles.dotDotDot}>...</Text>
+        <Image
+          source= {require('../images/icons/threeDots.png')}
+          style = {viewStyles.dotDotDot}
+          resizeMode = {'contain'}
+        />
       </View>
     );
   }
@@ -37,11 +41,19 @@ const viewStyles = {
 
   profilePicture:
   {
-  height: 30,
-  width: 30,
+  height: 31.5,
+  width: 31.5,
   borderRadius:15,
-  marginRight: 10
-  }
+  marginRight: 10,
+  marginLeft: 3
+},
+
+dotDotDot:
+{
+  height: 15,
+  width: 15,
+  marginLeft: '58%'
+}
 
 };
 
@@ -56,11 +68,11 @@ const textStyles =
 
   dotDotDot:
   {
-    fontSize: 18,
-    fontWeight: '500',
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'black',
     backgroundColor: 'transparent',
-    marginLeft: '68%',
-    marginBottom: '2%'
+    marginLeft: '50%',
   }
 };
 export {CellUserDataBar};
